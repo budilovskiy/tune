@@ -88,7 +88,6 @@ public class SoundJLayer {
      */
     public void play(List<Track> playlist) {
         stop();
-        //currentPlaylist = playlist;
         currentTrack = playlist.get(new Random().nextInt(playlist.size()));
         currentTrack.setTrackURL(currentTrack.toString());
         stringTrackURL = currentTrack.getTrackURL();
