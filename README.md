@@ -1,6 +1,6 @@
 # About
 
-tune! is a simple music player with easy-to-use interface that plays top-100 tracks of the music tag, according to last.fm charts.
+tune! is a simple music player with easy-to-use interface that plays top-100 tracks tagged by the entered tag, according to last.fm charts.
 
 # Libraries and APIs
 
