@@ -8,6 +8,7 @@ package com.gmail.budilovskiy.maksim;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -32,20 +33,23 @@ import org.xml.sax.SAXException;
 public class TopTracks {
 
     private static final String LAST_FM_API_KEY = "ce021b6cb5cb325de823959093b8854b";
-    private static final String LAST_FM_API_METHOD = "tag.gettoptracks";
     private static final String LAST_FM_LIMIT_OF_TRACKS = "100";
 
-    private static List<Track> topTracks = null;
+    private List<Track> topTracks = null;
     private String connectToUrl;
 
 
-    public TopTracks(String tag) {
+    public TopTracks(String searchString, String method) {
         StringBuffer buffer = new StringBuffer();
         buffer.append("http://ws.audioscrobbler.com/2.0/");
         buffer.append("?method=");
-        buffer.append(LAST_FM_API_METHOD);
-        buffer.append("&tag=");
-        buffer.append(tag);
+        buffer.append(method);
+        if (method.equals("tag.gettoptracks")) {
+            buffer.append("&tag=");
+        } else if (method.equals("artist.gettoptracks")) {
+            buffer.append("&artist=");
+        }
+        buffer.append(searchString);
         buffer.append("&limit=");
         buffer.append(LAST_FM_LIMIT_OF_TRACKS);
         buffer.append("&api_key=");
@@ -53,6 +57,7 @@ public class TopTracks {
         connectToUrl = buffer.toString();
         connectToUrl = connectToUrl.replaceAll(" ", "%20");
         try {
+            connectToUrl = new String(connectToUrl.getBytes("UTF-8"), "windows-1251");
             topTracks = getTopTracksFromLastFm(connectToUrl);
         } catch (XPathExpressionException | IOException | ParserConfigurationException | SAXException ex) {
             Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
@@ -78,7 +83,7 @@ public class TopTracks {
      * @throws SAXException
      * @throws XPathExpressionException
      */
-        private static List<Track> getTopTracksFromLastFm(String connectToUrl) throws IOException,
+        private List<Track> getTopTracksFromLastFm(String connectToUrl) throws IOException,
             ParserConfigurationException, SAXException,
             XPathExpressionException {
 
