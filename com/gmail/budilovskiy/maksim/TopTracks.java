@@ -32,7 +32,7 @@ import org.xml.sax.SAXException;
 
 public class TopTracks {
 
-    private static final String LAST_FM_API_KEY = "ce021b6cb5cb325de823959093b8854b";
+    private static final String LAST_FM_API_KEY = /*api key from last.fm*/;
     private static final String LAST_FM_LIMIT_OF_TRACKS = "100";
 
     private List<Track> topTracks = null;
