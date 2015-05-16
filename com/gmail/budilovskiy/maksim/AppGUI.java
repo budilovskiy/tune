@@ -11,6 +11,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     private List<Track> topTracks;
     private SoundJLayer player;
     private boolean isPlaying;
+    private String searchMethod = "tag.gettoptracks";
 
     /**
      * Creates new form AppGUI
@@ -47,6 +48,8 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         stopButton = new javax.swing.JLabel();
         searchTextField = new javax.swing.JTextField();
         infoField = new javax.swing.JTextField();
+        tagRadioButton = new javax.swing.JRadioButton();
+        artistRadioButton = new javax.swing.JRadioButton();
         background = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -55,11 +58,12 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         setResizable(false);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        searchButton.setFont(new java.awt.Font("Calibri", 1, 18)); // NOI18N
+        searchButton.setFont(new java.awt.Font("Calibri", 1, 14)); // NOI18N
         searchButton.setForeground(new java.awt.Color(255, 255, 255));
         searchButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         searchButton.setText("Search");
         searchButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        searchButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         searchButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mousePressed(java.awt.event.MouseEvent evt) {
                 searchButtonMousePressed(evt);
@@ -68,7 +72,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
                 searchButtonMouseReleased(evt);
             }
         });
-        getContentPane().add(searchButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 25, 98, 32));
+        getContentPane().add(searchButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(302, 23, 98, 36));
 
         nextButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         nextButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -97,7 +101,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
 
         searchTextField.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
         searchTextField.setForeground(new java.awt.Color(153, 153, 153));
-        searchTextField.setText("enter music tag to search");
+        searchTextField.setText("enter tag or artist to search");
         searchTextField.setBorder(null);
         searchTextField.setOpaque(false);
         searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -105,7 +109,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
                 searchTextFieldKeyTyped(evt);
             }
         });
-        getContentPane().add(searchTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 28, 258, 30));
+        getContentPane().add(searchTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 28, 260, 30));
 
         infoField.setEditable(false);
         infoField.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
@@ -117,6 +121,31 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         infoField.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         infoField.setOpaque(false);
         getContentPane().add(infoField, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 203, 365, 30));
+
+        tagRadioButton.setForeground(new java.awt.Color(255, 255, 255));
+        tagRadioButton.setSelected(true);
+        tagRadioButton.setText("Tag");
+        tagRadioButton.setFocusPainted(false);
+        tagRadioButton.setFocusable(false);
+        tagRadioButton.setOpaque(false);
+        tagRadioButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tagRadioButtonMouseClicked(evt);
+            }
+        });
+        getContentPane().add(tagRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 3, -1, 20));
+
+        artistRadioButton.setForeground(new java.awt.Color(255, 255, 255));
+        artistRadioButton.setText("Artist");
+        artistRadioButton.setFocusPainted(false);
+        artistRadioButton.setFocusable(false);
+        artistRadioButton.setOpaque(false);
+        artistRadioButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                artistRadioButtonMouseClicked(evt);
+            }
+        });
+        getContentPane().add(artistRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 3, -1, 20));
 
         background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/gmail/budilovskiy/maksim/background.png"))); // NOI18N
         getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 426, 236));
@@ -160,10 +189,33 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         }
     }//GEN-LAST:event_stopButtonMouseReleased
 
+    private void searchTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyTyped
+        if (searchTextField.getText().equals("enter tag or artist to search")) {
+            searchTextField.setText("");
+        }
+        searchTextField.setForeground(Color.black);
+    }//GEN-LAST:event_searchTextFieldKeyTyped
+
+    private void tagRadioButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tagRadioButtonMouseClicked
+        artistRadioButton.setSelected(false);
+        tagRadioButton.setSelected(true);
+        searchMethod = "tag.gettoptracks";
+    }//GEN-LAST:event_tagRadioButtonMouseClicked
+
+    private void artistRadioButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_artistRadioButtonMouseClicked
+        tagRadioButton.setSelected(false);
+        artistRadioButton.setSelected(true);
+        searchMethod = "artist.gettoptracks";
+    }//GEN-LAST:event_artistRadioButtonMouseClicked
+
+    private void searchButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchButtonMousePressed
+        infoField.setText("Searching. Please wait");
+    }//GEN-LAST:event_searchButtonMousePressed
+
     private void searchButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchButtonMouseReleased
-        topTracks = new TopTracks(searchTextField.getText()).getTopTracks();
+         topTracks = new TopTracks(searchTextField.getText(), searchMethod).getTopTracks();
         if (searchTextField.getText().equals("") || topTracks == null) {
-            infoField.setText("There is no such tag");
+            infoField.setText("There is no such tag or artist");
         } else {
             if (player != null) {
                 player.stop();
@@ -171,17 +223,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
             infoField.setText("Searching complete");
         }
     }//GEN-LAST:event_searchButtonMouseReleased
-
-    private void searchTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyTyped
-        if (searchTextField.getText().equals("enter music tag to search")) {
-            searchTextField.setText("");
-        }
-        searchTextField.setForeground(Color.black);
-    }//GEN-LAST:event_searchTextFieldKeyTyped
-
-    private void searchButtonMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchButtonMousePressed
-        infoField.setText("Searching. Please wait");
-    }//GEN-LAST:event_searchButtonMousePressed
 
     /**
      * @param args the command line arguments
@@ -227,6 +268,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JRadioButton artistRadioButton;
     private javax.swing.JLabel background;
     private javax.swing.JTextField infoField;
     private javax.swing.JLabel nextButton;
@@ -234,5 +276,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     private javax.swing.JLabel searchButton;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JLabel stopButton;
+    private javax.swing.JRadioButton tagRadioButton;
     // End of variables declaration//GEN-END:variables
 }
