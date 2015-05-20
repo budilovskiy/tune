@@ -1,6 +1,7 @@
 package com.gmail.budilovskiy.maksim;
 
 import java.awt.Color;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,6 +13,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     private SoundJLayer player;
     private boolean isPlaying;
     private String searchMethod = "tag.gettoptracks";
+    private String searchString;
 
     /**
      * Creates new form AppGUI
@@ -213,7 +215,14 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     }//GEN-LAST:event_searchButtonMousePressed
 
     private void searchButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchButtonMouseReleased
-         topTracks = new TopTracks(searchTextField.getText(), searchMethod).getTopTracks();
+        // get user input 
+        try {
+            searchString = new String(searchTextField.getText().getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
+            infoField.setText("Unsupported encoding");
+        }
+        topTracks = new TopTracks(searchString, searchMethod).getTopTracks();
         if (searchTextField.getText().equals("") || topTracks == null) {
             infoField.setText("There is no such tag or artist");
         } else {
