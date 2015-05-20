@@ -1,5 +1,5 @@
 /**
- * This class manage shuffle playing of the PlayList<Track>
+ * This class manages shuffle playing of the PlayList<Track>
  */
 package com.gmail.budilovskiy.maksim;
 
@@ -21,8 +21,8 @@ import javazoom.jl.player.Player;
 public class SoundJLayer {
 
     private final List<Track> CURRENT_PLAYLIST;
-    private static Track currentTrack;
-    private static URL url;
+    private Track currentTrack;
+    private URL url;
     private static HttpURLConnection connection;
     private static String stringTrackURL;
     private static InputStream is;
@@ -88,6 +88,7 @@ public class SoundJLayer {
      */
     public void play(List<Track> playlist) {
         stop();
+        //currentPlaylist = playlist;
         currentTrack = playlist.get(new Random().nextInt(playlist.size()));
         currentTrack.setTrackURL(currentTrack.toString());
         stringTrackURL = currentTrack.getTrackURL();
