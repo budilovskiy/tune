@@ -88,7 +88,7 @@ public class Track {
         buff.append(fullTrackName);
         buff.append("&");
         buff.append("access_token=");
-        buff.append("/*VK_API_TOKEN*/");
+        buff.append("/*API_KEY*/");
         String connectToUrl = buff.toString();
         connectToUrl = connectToUrl.replaceAll(" ", "%20");
 
