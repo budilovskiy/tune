@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,7 +33,7 @@ import org.xml.sax.SAXException;
 
 public class TopTracks {
 
-    private static final String LAST_FM_API_KEY = "/*API_KEY*/";
+    private static final String LAST_FM_API_KEY = "...";
     private static final String LAST_FM_LIMIT_OF_TRACKS = "100";
 
     private List<Track> topTracks = null;
@@ -39,36 +41,49 @@ public class TopTracks {
 
     public TopTracks(String searchString, String method) {
 
+        StringBuffer buffer = buildConnectToURL(searchString, method);
+        connectToUrl = buffer.toString();
+
+        try {
+            System.out.println(URLDecoder.decode(connectToUrl, "UTF-8"));
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(TopTracks.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try {
+            topTracks = getTopTracksFromLastFm(connectToUrl);
+        } catch (IOException | XPathExpressionException | ParserConfigurationException | SAXException ex) {
+            Logger.getLogger(TopTracks.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Unable to get data from last.fm");
+        }
+
+    }
+
+    private StringBuffer buildConnectToURL(String searchString, String method) {
+        try {
+            searchString = URLEncoder.encode(searchString, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Logger.getLogger(TopTracks.class.getName()).log(Level.SEVERE, null, ex);
+        }
         StringBuffer buffer = new StringBuffer();
         buffer.append("http://ws.audioscrobbler.com/2.0/");
         buffer.append("?method=");
         buffer.append(method);
-        if (method.equals("tag.gettoptracks")) {
-            buffer.append("&tag=");
-            buffer.append(searchString);
-        } else if (method.equals("artist.gettoptracks")) {
-            buffer.append("&artist=");
-            buffer.append(searchString);
+        switch (method) {
+            case "tag.gettoptracks":
+                buffer.append("&tag=");
+                buffer.append(searchString);
+                break;
+            case "artist.gettoptracks":
+                buffer.append("&artist=");
+                buffer.append(searchString);
+                break;
         }
         buffer.append("&limit=");
         buffer.append(LAST_FM_LIMIT_OF_TRACKS);
         buffer.append("&api_key=");
         buffer.append(LAST_FM_API_KEY);
-        connectToUrl = buffer.toString();
-        connectToUrl = connectToUrl.replaceAll(" ", "%20");
-        /* for debugging
-        try {
-            System.out.println(new String(connectToUrl.getBytes("windows-1251"), "UTF-8"));
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(TopTracks.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        */
-        try {
-            topTracks = getTopTracksFromLastFm(connectToUrl);
-        } catch (XPathExpressionException | IOException | ParserConfigurationException | SAXException ex) {
-            Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
-            System.out.println("Unable to get data from last.fm");
-        }
+        return buffer;
     }
 
     /* getter */
@@ -80,8 +95,8 @@ public class TopTracks {
     }
 
     /**
-     * method to get and parse XML from Last.fm topTracks (LAST_FM_LIMIT_OF_TRACKS) tracks
-     * and return list of Tracks
+     * get and parse XML from Last.fm topTracks (LAST_FM_LIMIT_OF_TRACKS) tracks
+     * by tag and returns List of Tracks
      *
      * @param connectToUrl
      * @return list of top /LAST_FM_LIMIT_OF_TRACKS/ tracks from Last.fm
