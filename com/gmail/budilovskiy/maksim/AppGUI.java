@@ -1,7 +1,10 @@
+/**
+ * tune! is a music player that plays top-100 tracks of the music tag, according
+ * to last.fm charts
+ */
 package com.gmail.budilovskiy.maksim;
 
 import java.awt.Color;
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,7 +16,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     private SoundJLayer player;
     private boolean isPlaying;
     private String searchMethod = "tag.gettoptracks";
-    private String searchString;
+    private boolean isRandom = false;
 
     /**
      * Creates new form AppGUI
@@ -34,6 +37,10 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         playButton.enableInputMethods(true);
         isPlaying = false;
     }
+    
+    private void play(List<Track> playlist, boolean random) throws NullPointerException {
+        player.play(playlist, random);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -44,12 +51,14 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        buttonGroup1 = new javax.swing.ButtonGroup();
         searchButton = new javax.swing.JLabel();
         nextButton = new javax.swing.JLabel();
         playButton = new javax.swing.JLabel();
         stopButton = new javax.swing.JLabel();
-        searchTextField = new javax.swing.JTextField();
         infoField = new javax.swing.JTextField();
+        searchTextField = new javax.swing.JTextField();
+        randomButton = new javax.swing.JLabel();
         tagRadioButton = new javax.swing.JRadioButton();
         artistRadioButton = new javax.swing.JRadioButton();
         background = new javax.swing.JLabel();
@@ -101,18 +110,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         });
         getContentPane().add(stopButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 92, 70, 70));
 
-        searchTextField.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
-        searchTextField.setForeground(new java.awt.Color(153, 153, 153));
-        searchTextField.setText("enter tag or artist to search");
-        searchTextField.setBorder(null);
-        searchTextField.setOpaque(false);
-        searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                searchTextFieldKeyTyped(evt);
-            }
-        });
-        getContentPane().add(searchTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(34, 28, 260, 30));
-
         infoField.setEditable(false);
         infoField.setFont(new java.awt.Font("Calibri", 0, 18)); // NOI18N
         infoField.setForeground(new java.awt.Color(255, 255, 255));
@@ -124,30 +121,58 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         infoField.setOpaque(false);
         getContentPane().add(infoField, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 203, 365, 30));
 
+        searchTextField.setFont(new java.awt.Font("Calibri", 0, 14)); // NOI18N
+        searchTextField.setForeground(new java.awt.Color(153, 153, 153));
+        searchTextField.setText("enter tag or artist to search");
+        searchTextField.setBorder(javax.swing.BorderFactory.createEmptyBorder(2, 8, 1, 1));
+        searchTextField.setCaretPosition(0);
+        searchTextField.setMargin(new java.awt.Insets(2, 10, 0, 2));
+        searchTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                searchTextFieldFocusGained(evt);
+            }
+        });
+        getContentPane().add(searchTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(84, 24, 210, 34));
+
+        randomButton.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        randomButton.setForeground(new java.awt.Color(153, 153, 153));
+        randomButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        randomButton.setText("random");
+        randomButton.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), javax.swing.BorderFactory.createEmptyBorder(0, 3, 0, 3)));
+        randomButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        randomButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                randomButtonMouseReleased(evt);
+            }
+        });
+        getContentPane().add(randomButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, -1, -1));
+
+        buttonGroup1.add(tagRadioButton);
+        tagRadioButton.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
         tagRadioButton.setForeground(new java.awt.Color(255, 255, 255));
         tagRadioButton.setSelected(true);
         tagRadioButton.setText("Tag");
         tagRadioButton.setFocusPainted(false);
-        tagRadioButton.setFocusable(false);
         tagRadioButton.setOpaque(false);
         tagRadioButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tagRadioButtonMouseClicked(evt);
             }
         });
-        getContentPane().add(tagRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 3, -1, 20));
+        getContentPane().add(tagRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 22, -1, 16));
 
+        buttonGroup1.add(artistRadioButton);
+        artistRadioButton.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
         artistRadioButton.setForeground(new java.awt.Color(255, 255, 255));
         artistRadioButton.setText("Artist");
         artistRadioButton.setFocusPainted(false);
-        artistRadioButton.setFocusable(false);
         artistRadioButton.setOpaque(false);
         artistRadioButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 artistRadioButtonMouseClicked(evt);
             }
         });
-        getContentPane().add(artistRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 3, -1, 20));
+        getContentPane().add(artistRadioButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(28, 40, -1, 16));
 
         background.setIcon(new javax.swing.ImageIcon(getClass().getResource("/com/gmail/budilovskiy/maksim/background.png"))); // NOI18N
         getContentPane().add(background, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 426, 236));
@@ -157,56 +182,43 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     }// </editor-fold>//GEN-END:initComponents
 
     private void playButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_playButtonMouseReleased
-        try {
-            if (!isPlaying) {
+        if (!isPlaying) {
+            try {
                 player = new SoundJLayer(topTracks);
-                play(topTracks);
+                play(topTracks, isRandom);
                 isPlaying = true;
+            } catch (NullPointerException ex) {
+                infoField.setText("There is nothing to play");
             }
-        } catch (NullPointerException ex) {
-            Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
-            infoField.setText("There is nothing to play");
         }
-
     }//GEN-LAST:event_playButtonMouseReleased
 
     private void nextButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nextButtonMouseReleased
-        try {
-            if (isPlaying) {
-                play(topTracks);
+        if (isPlaying) {
+            try {
+                play(topTracks, isRandom);
+            } catch (NullPointerException ex) {
+                Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
+                // do nothing if player is null
             }
-        } catch (NullPointerException ex) {
-            Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
-            // do nothing if player is null
         }
-
     }//GEN-LAST:event_nextButtonMouseReleased
 
     private void stopButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopButtonMouseReleased
         try {
+            player.setTrackIndex(0);
             player.stop();
         } catch (NullPointerException ex) {
-            Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
             // do nothing if player is null
         }
     }//GEN-LAST:event_stopButtonMouseReleased
 
-    private void searchTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyTyped
-        if (searchTextField.getText().equals("enter tag or artist to search")) {
-            searchTextField.setText("");
-        }
-        searchTextField.setForeground(Color.black);
-    }//GEN-LAST:event_searchTextFieldKeyTyped
-
     private void tagRadioButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tagRadioButtonMouseClicked
-        artistRadioButton.setSelected(false);
-        tagRadioButton.setSelected(true);
         searchMethod = "tag.gettoptracks";
     }//GEN-LAST:event_tagRadioButtonMouseClicked
 
     private void artistRadioButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_artistRadioButtonMouseClicked
-        tagRadioButton.setSelected(false);
-        artistRadioButton.setSelected(true);
         searchMethod = "artist.gettoptracks";
     }//GEN-LAST:event_artistRadioButtonMouseClicked
 
@@ -215,14 +227,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     }//GEN-LAST:event_searchButtonMousePressed
 
     private void searchButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_searchButtonMouseReleased
-        // get user input 
-        try {
-            searchString = new String(searchTextField.getText().getBytes("UTF-8"));
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
-            infoField.setText("Unsupported encoding");
-        }
-        topTracks = new TopTracks(searchString, searchMethod).getTopTracks();
+        topTracks = new TopTracks(searchTextField.getText(), searchMethod).getTopTracks();
         if (searchTextField.getText().equals("") || topTracks == null) {
             infoField.setText("There is no such tag or artist");
         } else {
@@ -232,6 +237,23 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
             infoField.setText("Searching complete");
         }
     }//GEN-LAST:event_searchButtonMouseReleased
+
+    private void searchTextFieldFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_searchTextFieldFocusGained
+        if (searchTextField.getText().equals("enter tag or artist to search")) {
+            searchTextField.setText("");
+        }
+        searchTextField.setForeground(Color.black);
+    }//GEN-LAST:event_searchTextFieldFocusGained
+
+    private void randomButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_randomButtonMouseReleased
+        if (isRandom) {
+            randomButton.setForeground(new java.awt.Color(153, 153, 153));
+            isRandom = false;
+        } else {
+            randomButton.setForeground(new java.awt.Color(255, 255, 255));
+            isRandom = true;
+        }
+    }//GEN-LAST:event_randomButtonMouseReleased
 
     /**
      * @param args the command line arguments
@@ -271,17 +293,14 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         });
     }
 
-    private void play(List<Track> playlist) throws NullPointerException {
-        //player.stop();
-        player.play(playlist);
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton artistRadioButton;
     private javax.swing.JLabel background;
+    private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JTextField infoField;
     private javax.swing.JLabel nextButton;
     private javax.swing.JLabel playButton;
+    private javax.swing.JLabel randomButton;
     private javax.swing.JLabel searchButton;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JLabel stopButton;
