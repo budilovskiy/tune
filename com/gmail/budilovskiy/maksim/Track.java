@@ -1,5 +1,5 @@
 /**
- * class provide a single track
+ * class provide a single track bean
  * 
  */
 
@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -66,7 +68,7 @@ public class Track {
             /* for debugging */
             System.out.println(new Date(System.currentTimeMillis()) + "\n" + this.toString() + "\nURL: " + trackURL);
         } catch (XPathExpressionException | IOException | ParserConfigurationException | SAXException ex) {
-            Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Track.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("Error while searching for a track URL: " + fullTrackName);
         }
     }
@@ -79,22 +81,29 @@ public class Track {
     // getting Track URL from VK
     private static String getURL(String fullTrackName)
             throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
-        fullTrackName = fullTrackName.replaceAll("& ", "");
+        /*
+        Create URL string
+        */
         StringBuffer buff = new StringBuffer();
-        fullTrackName = new String(fullTrackName.getBytes("UTF-8"), "windows-1251");
         buff.append("https://api.vk.com/method/");
         buff.append("audio.search.xml");
         buff.append("?q=");
-        buff.append(fullTrackName);
+        buff.append(URLEncoder.encode(fullTrackName, "UTF-8"));
         buff.append("&");
         buff.append("access_token=");
-        buff.append("/*API_KEY*/");
+        buff.append("...");
         String connectToUrl = buff.toString();
-        connectToUrl = connectToUrl.replaceAll(" ", "%20");
+        System.out.println(URLDecoder.decode(connectToUrl, "UTF-8"));
 
+        /*
+        Perform request to vk.com
+        */
         URL url = new URL(connectToUrl);
         connection = (HttpURLConnection)url.openConnection();
 
+        /*
+        Get and parse XML from vk.com
+        */
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory
                 .newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
