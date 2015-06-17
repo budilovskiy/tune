@@ -1,5 +1,5 @@
 /**
- * This class manages shuffle playing of the PlayList<Track>
+ * This class manage shuffle playing of the PlayList<Track>
  */
 package com.gmail.budilovskiy.maksim;
 
@@ -29,7 +29,17 @@ public class SoundJLayer {
     private static BufferedInputStream bis;
     private static Thread audioThread;
     private static Player player;
-    private static boolean isPlaying = true;
+    private static boolean playing = true;
+    private static boolean random = true;
+    private int trackIndex = 0;
+
+    public void setTrackIndex(int trackIndex) {
+        this.trackIndex = trackIndex;
+    }
+
+    public static boolean isPlaying() {
+        return playing;
+    }
 
     private static final List<PlayListener> LISTENERS = new ArrayList<>();
 
@@ -64,7 +74,8 @@ public class SoundJLayer {
     public void stop() {
         if (player != null) {
             try {
-                isPlaying = false;
+                System.out.println("\nplayer is not null. Closing...");
+                playing = false;
                 player.close();
                 bis.close();
                 is.close();
@@ -74,10 +85,12 @@ public class SoundJLayer {
                     listener.PlayerStops();
                 }
                 /* for debugging */
-                System.out.println(currentTrack.toString() + " was stopped.\n");
+                System.out.println(currentTrack.toString() + " was stopped.");
             } catch (IOException ex) {
                 Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
             }
+        } else {
+            System.out.println("\nplayer is null");
         }
     }
 
@@ -85,18 +98,28 @@ public class SoundJLayer {
      * plays random track of playlist
      *
      * @param playlist to play
+     * @param random
      */
-    public void play(List<Track> playlist) {
+    public void play(List<Track> playlist, boolean random) {
         stop();
-        //currentPlaylist = playlist;
-        currentTrack = playlist.get(new Random().nextInt(playlist.size()));
-        currentTrack.setTrackURL(currentTrack.toString());
+        if (random) {
+            currentTrack = playlist.get(new Random().nextInt(playlist.size()));
+        } else {
+            currentTrack = playlist.get(trackIndex);
+        }
         stringTrackURL = currentTrack.getTrackURL();
+        if (stringTrackURL == null) {
+            currentTrack.setTrackURL(currentTrack.toString());
+            stringTrackURL = currentTrack.getTrackURL();
+        }
+        if (trackIndex < playlist.size() - 1) {
+            trackIndex += 1;
+        }
         playTrack(stringTrackURL);
     }
 
     /**
-     * plays single track of playlist
+     * plays single track from playlist
      *
      * @param trackURL
      */
@@ -120,7 +143,7 @@ public class SoundJLayer {
             @Override
             public void run() {
                 try {
-                    isPlaying = true;
+                    playing = true;
                     if (trackURL != null) {
                         for (PlayListener listener : LISTENERS) {
                             listener.PlayerStarts();
@@ -134,12 +157,12 @@ public class SoundJLayer {
                     // skip track if JavaLayerException
                     Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                if (isPlaying) {
-                    play(CURRENT_PLAYLIST);
+                if (playing) {
+                    play(CURRENT_PLAYLIST, random);
                 }
             }
         };
         audioThread.start();
-        isPlaying = false;
+        playing = false;
     }
 }
