@@ -20,9 +20,11 @@ import javazoom.jl.player.Player;
 
 public class SoundJLayer {
 
-    private final List<Track> CURRENT_PLAYLIST;
+    private static List<PlayListener> listeners = new ArrayList<>();
+    private static List<Track> currentPlaylist;
     private Track currentTrack;
     private URL url;
+    
     private static HttpURLConnection connection;
     private static String stringTrackURL;
     private static InputStream is;
@@ -30,18 +32,10 @@ public class SoundJLayer {
     private static Thread audioThread;
     private static Player player;
     private static boolean playing = true;
-    private static boolean random = true;
-    private int trackIndex = 0;
-
-    public void setTrackIndex(int trackIndex) {
-        this.trackIndex = trackIndex;
-    }
 
     public static boolean isPlaying() {
         return playing;
     }
-
-    private static final List<PlayListener> LISTENERS = new ArrayList<>();
 
     /**
      * constructor of SoundJLayer with new playlist
@@ -49,7 +43,7 @@ public class SoundJLayer {
      * @param playlist
      */
     public SoundJLayer(List<Track> playlist) {
-        CURRENT_PLAYLIST = playlist;
+        currentPlaylist = playlist;
     }
 
     /**
@@ -58,7 +52,7 @@ public class SoundJLayer {
      * @param listenerToAdd
      */
     public static void addListener(PlayListener listenerToAdd) {
-        LISTENERS.add(listenerToAdd);
+        listeners.add(listenerToAdd);
     }
 
     /**
@@ -74,23 +68,18 @@ public class SoundJLayer {
     public void stop() {
         if (player != null) {
             try {
-                System.out.println("\nplayer is not null. Closing...");
                 playing = false;
                 player.close();
                 bis.close();
                 is.close();
                 connection.disconnect();
                 player = null;
-                for (PlayListener listener : LISTENERS) {
+                for (PlayListener listener : listeners) {
                     listener.PlayerStops();
                 }
-                /* for debugging */
-                System.out.println(currentTrack.toString() + " was stopped.");
             } catch (IOException ex) {
                 Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } else {
-            System.out.println("\nplayer is null");
         }
     }
 
@@ -98,22 +87,15 @@ public class SoundJLayer {
      * plays random track of playlist
      *
      * @param playlist to play
-     * @param random
      */
-    public void play(List<Track> playlist, boolean random) {
+    public void play(List<Track> playlist) {
         stop();
-        if (random) {
-            currentTrack = playlist.get(new Random().nextInt(playlist.size()));
-        } else {
-            currentTrack = playlist.get(trackIndex);
-        }
+        currentTrack = playlist.get(new Random().nextInt(playlist.size()));
         stringTrackURL = currentTrack.getTrackURL();
+        /*Check if URL exists in Track bean. If not, try to get URL from VK*/
         if (stringTrackURL == null) {
             currentTrack.setTrackURL(currentTrack.toString());
             stringTrackURL = currentTrack.getTrackURL();
-        }
-        if (trackIndex < playlist.size() - 1) {
-            trackIndex += 1;
         }
         playTrack(stringTrackURL);
     }
@@ -145,12 +127,10 @@ public class SoundJLayer {
                 try {
                     playing = true;
                     if (trackURL != null) {
-                        for (PlayListener listener : LISTENERS) {
+                        for (PlayListener listener : listeners) {
                             listener.PlayerStarts();
                         }
                         player = new Player(bis);
-                        /* for debugging */
-                        System.out.println(currentTrack.toString() + " is playing...");
                         player.play();
                     }
                 } catch (JavaLayerException ex) {
@@ -158,7 +138,7 @@ public class SoundJLayer {
                     Logger.getLogger(SoundJLayer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 if (playing) {
-                    play(CURRENT_PLAYLIST, random);
+                    play(currentPlaylist);
                 }
             }
         };
