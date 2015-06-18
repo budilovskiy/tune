@@ -16,7 +16,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     private SoundJLayer player;
     private boolean isPlaying;
     private String searchMethod = "tag.gettoptracks";
-    private boolean isRandom = false;
 
     /**
      * Creates new form AppGUI
@@ -38,8 +37,8 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         isPlaying = false;
     }
     
-    private void play(List<Track> playlist, boolean random) throws NullPointerException {
-        player.play(playlist, random);
+    private void play(List<Track> playlist) throws NullPointerException {
+        player.play(playlist);
     }
 
     /**
@@ -58,7 +57,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         stopButton = new javax.swing.JLabel();
         infoField = new javax.swing.JTextField();
         searchTextField = new javax.swing.JTextField();
-        randomButton = new javax.swing.JLabel();
         tagRadioButton = new javax.swing.JRadioButton();
         artistRadioButton = new javax.swing.JRadioButton();
         background = new javax.swing.JLabel();
@@ -134,19 +132,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         });
         getContentPane().add(searchTextField, new org.netbeans.lib.awtextra.AbsoluteConstraints(84, 24, 210, 34));
 
-        randomButton.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        randomButton.setForeground(new java.awt.Color(153, 153, 153));
-        randomButton.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        randomButton.setText("random");
-        randomButton.setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)), javax.swing.BorderFactory.createEmptyBorder(0, 3, 0, 3)));
-        randomButton.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        randomButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseReleased(java.awt.event.MouseEvent evt) {
-                randomButtonMouseReleased(evt);
-            }
-        });
-        getContentPane().add(randomButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, -1, -1));
-
         buttonGroup1.add(tagRadioButton);
         tagRadioButton.setFont(new java.awt.Font("Calibri", 0, 11)); // NOI18N
         tagRadioButton.setForeground(new java.awt.Color(255, 255, 255));
@@ -185,7 +170,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         if (!isPlaying) {
             try {
                 player = new SoundJLayer(topTracks);
-                play(topTracks, isRandom);
+                play(topTracks);
                 isPlaying = true;
             } catch (NullPointerException ex) {
                 infoField.setText("There is nothing to play");
@@ -196,7 +181,7 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     private void nextButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nextButtonMouseReleased
         if (isPlaying) {
             try {
-                play(topTracks, isRandom);
+                play(topTracks);
             } catch (NullPointerException ex) {
                 Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
                 // do nothing if player is null
@@ -206,7 +191,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
 
     private void stopButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_stopButtonMouseReleased
         try {
-            player.setTrackIndex(0);
             player.stop();
         } catch (NullPointerException ex) {
             Logger.getLogger(AppGUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -244,16 +228,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         }
         searchTextField.setForeground(Color.black);
     }//GEN-LAST:event_searchTextFieldFocusGained
-
-    private void randomButtonMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_randomButtonMouseReleased
-        if (isRandom) {
-            randomButton.setForeground(new java.awt.Color(153, 153, 153));
-            isRandom = false;
-        } else {
-            randomButton.setForeground(new java.awt.Color(255, 255, 255));
-            isRandom = true;
-        }
-    }//GEN-LAST:event_randomButtonMouseReleased
 
     /**
      * @param args the command line arguments
@@ -293,6 +267,8 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
         });
     }
 
+    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton artistRadioButton;
     private javax.swing.JLabel background;
@@ -300,7 +276,6 @@ public class AppGUI extends javax.swing.JFrame implements PlayListener {
     private javax.swing.JTextField infoField;
     private javax.swing.JLabel nextButton;
     private javax.swing.JLabel playButton;
-    private javax.swing.JLabel randomButton;
     private javax.swing.JLabel searchButton;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JLabel stopButton;
