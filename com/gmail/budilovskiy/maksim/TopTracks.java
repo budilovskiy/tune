@@ -109,7 +109,7 @@ public class TopTracks {
             ParserConfigurationException, SAXException,
             XPathExpressionException {
 
-        topTracks = new ArrayList<>();
+        topTracks = new ArrayList<>(LAST_FM_LIMIT_OF_TRACKS);
 
         URL url = new URL(connectToUrl);
         URLConnection connection = url.openConnection();
